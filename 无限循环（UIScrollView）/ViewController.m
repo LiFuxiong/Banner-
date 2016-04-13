@@ -37,6 +37,8 @@
     }
     LFXScrollView *l = [[LFXScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
     l.imagesA = imagesMuA;
+    l.titleNameA = @[@"sdsd-----1",@"sdsd-----2",@"sdsd-----3"];
+    l.pageAlignment = LFXScrollViewPageControlAlignmentLeft;
     [self.view addSubview:l];
 }
 

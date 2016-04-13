@@ -23,7 +23,6 @@ typedef NS_ENUM(NSInteger,LFXScrollViewDataEnum) {
 
 @property (strong, nonatomic) UIImageView *rightImageView; //右边视图
 
-
 @property (weak, nonatomic) UIScrollView *scrollView; //滚动视图UIScrollView
 
 @property (assign, nonatomic) NSUInteger imagesCount;  //图片数量
@@ -37,12 +36,19 @@ typedef NS_ENUM(NSInteger,LFXScrollViewDataEnum) {
 
 
 @property (strong, nonatomic)     NSTimer * scrollTimer;  //滑动定时器
+
+@property (weak, nonatomic) UILabel *titleL; //标题Label
+
 @end
 
 
 static CGFloat PageControlH = 40;
 static CGFloat PageControlM = 20;
 static CGFloat TimeInt = 2.0;
+
+#define TitleF [UIFont systemFontOfSize:12.0]
+#define TitleC [UIColor whiteColor]
+static CGFloat TitleM = 10;
 @implementation LFXScrollView
 
 - (instancetype)init {
@@ -139,6 +145,16 @@ static CGFloat TimeInt = 2.0;
     [bgView addSubview:pageControl];
     self.pageControl = pageControl;
     
+    
+    
+    //创建标题Label
+    UILabel *label = [[UILabel alloc] init];
+    label.font = TitleF;
+    label.textColor = TitleC;
+    [bgView addSubview:label];
+    self.titleL = label;
+    
+    
 }
 
 #pragma mark
@@ -182,7 +198,8 @@ static CGFloat TimeInt = 2.0;
     if (imagesNameA) {
         self.imagesCount = imagesNameA.count;
         self.dateEnum = LFXScrollViewDataImageName;
-
+        //设置pageControl页数
+        self.pageControl.numberOfPages = self.imagesCount;
     }
 }
 
@@ -245,11 +262,25 @@ static CGFloat TimeInt = 2.0;
             break;
         case LFXScrollViewPageControlAlignmentLeft: {
             self.pageControl.frame = CGRectMake(PageControlM, 0, pageCSize.width, PageControlH);
+            //判断是否有说明标题
+            if (self.titleNameA.count) {
+                CGFloat M_X = PageControlM + pageCSize.width;
+                self.titleL.frame = CGRectMake(M_X, 0,W - M_X - TitleM, PageControlH);
+                self.titleL.textAlignment = NSTextAlignmentRight;
+                self.titleL.text = self.titleNameA[self.currentImageIndex];
+            }
         }
             break;
         case LFXScrollViewPageControlAlignmentRight: {
             CGFloat page_x = - (self.pageControl.bounds.size.width - pageCSize.width - PageControlM) / 2.0 ;
             self.pageControl.bounds = CGRectMake(page_x, self.pageControl.frame.origin.y, self.pageControl.bounds.size.width, PageControlH);
+            //判断是否有说明标题
+            if (self.titleNameA.count) {
+                CGFloat M_X = PageControlM + pageCSize.width;
+                self.titleL.frame = CGRectMake(TitleM, 0,W - M_X, PageControlH);
+                self.titleL.textAlignment = NSTextAlignmentLeft;
+                self.titleL.text = self.titleNameA[self.currentImageIndex];
+            }
         }
             
             break;
@@ -258,9 +289,10 @@ static CGFloat TimeInt = 2.0;
             break;
     }
     
+    
     if(self.openAuto) {
         /**先移除定时器*/
-        [self releaseTimer];
+        if (self.scrollTimer)[self releaseTimer];
         /** 添加定时器*/
         [self addTimer];
     }
@@ -318,14 +350,18 @@ static CGFloat TimeInt = 2.0;
    
     CGPoint offset = self.scrollView.contentOffset;
     if (offset.x > W) { //向右滑动（指向下一张图片索引）
-        self.selectCurrentPage = _currentImageIndex = (_currentImageIndex + 1) % self.imagesCount;
+         _currentImageIndex = (_currentImageIndex + 1) % self.imagesCount;
     }else if(offset.x < W){ //向左滑动（指向上一张图片索引）
-        self.selectCurrentPage = _currentImageIndex=(_currentImageIndex + self.imagesCount - 1) % self.imagesCount;
+         _currentImageIndex =(_currentImageIndex + self.imagesCount - 1) % self.imagesCount;
     }
    
     //改变PageControl页码
-    self.pageControl.currentPage = self.currentImageIndex;
+    self.selectCurrentPage = self.pageControl.currentPage = self.currentImageIndex;
     
+    //修改标题
+    if (self.titleNameA.count) {
+        self.titleL.text = self.titleNameA[self.currentImageIndex];
+    }
     /**重新设置左右图片*/
     [self setLeftImageViewAndRightImageView];
 }
@@ -367,6 +403,11 @@ static CGFloat TimeInt = 2.0;
     }
     
     self.selectCurrentPage = self.pageControl.currentPage = self.currentImageIndex;
+    
+    //修改标题
+    if (self.titleNameA.count) {
+        self.titleL.text = self.titleNameA[self.currentImageIndex];
+    }
     
     //延迟执行方法,使其能出现滑动的效果
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)( self.timeInterval * .1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

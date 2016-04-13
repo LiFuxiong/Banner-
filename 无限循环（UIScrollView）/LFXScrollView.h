@@ -31,4 +31,6 @@ typedef NS_ENUM(NSInteger,LFXScrollViewPageControlAlignment) {
 @property (assign, nonatomic) BOOL openAuto; //是否自动轮播
 
 @property (assign, nonatomic) CGFloat timeInterval;  //轮播时间间隔
+
+
 @end
