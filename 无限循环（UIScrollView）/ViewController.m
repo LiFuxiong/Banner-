@@ -35,9 +35,12 @@
         UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"%d.jpg",i]];
         [imagesMuA addObject:image];
     }
-    LFXScrollView *l = [[LFXScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
-    l.imagesA = imagesMuA;
-    l.titleNameA = @[@"sdsd-----1",@"sdsd-----2",@"sdsd-----3"];
+//    LFXScrollView *l = [[LFXScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
+    LFXScrollView *l = [[LFXScrollView alloc] initWithFrame:CGRectZero imagesNameArray:@[@"1.jpg",@"2.jpg",@"3.jpg"] titleNameArray:@[@"sdsd-----1",@"sdsd-----2",@"sdsd-----3"]];
+    l.frame = CGRectMake(0, 0, self.view.frame.size.width, 200);
+//    l.imagesA = imagesMuA;
+//    l.titleNameA = @[@"sdsd-----1",@"sdsd-----2",@"sdsd-----3"];
+    
     l.pageAlignment = LFXScrollViewPageControlAlignmentLeft;
     [self.view addSubview:l];
 }

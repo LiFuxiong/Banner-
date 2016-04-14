@@ -8,38 +8,6 @@
 
 #import "LFXScrollView.h"
 
-typedef NS_ENUM(NSInteger,LFXScrollViewDataEnum) {
-    LFXScrollViewDataImage = 0,
-    LFXScrollViewDataImageName = 1,
-};
-
-@interface  LFXScrollView()<UIScrollViewDelegate>
-
-
-
-@property (strong, nonatomic) UIImageView *leftImageView; //左边视图
-
-@property (strong, nonatomic) UIImageView *centerImageView; //中间视图
-
-@property (strong, nonatomic) UIImageView *rightImageView; //右边视图
-
-@property (weak, nonatomic) UIScrollView *scrollView; //滚动视图UIScrollView
-
-@property (assign, nonatomic) NSUInteger imagesCount;  //图片数量
-
-
-@property (assign, nonatomic) NSUInteger currentImageIndex;  //当前图片索引
-
-@property (weak, nonatomic) UIPageControl *pageControl;  //分页控件
-
-@property (assign, nonatomic)LFXScrollViewDataEnum dateEnum; //数据类型（是图片还是名字）
-
-
-@property (strong, nonatomic)     NSTimer * scrollTimer;  //滑动定时器
-
-@property (weak, nonatomic) UILabel *titleL; //标题Label
-
-@end
 
 
 static CGFloat PageControlH = 40;
@@ -49,6 +17,31 @@ static CGFloat TimeInt = 2.0;
 #define TitleF [UIFont systemFontOfSize:12.0]
 #define TitleC [UIColor whiteColor]
 static CGFloat TitleM = 10;
+
+typedef NS_ENUM(NSInteger,LFXScrollViewDataEnum) {
+    LFXScrollViewDataImageName = 0,
+    LFXScrollViewDataImage = 1
+    
+};
+
+@interface  LFXScrollView()<UIScrollViewDelegate>
+
+
+@property (strong, nonatomic) UIImageView *leftImageView; //左边视图
+@property (strong, nonatomic) UIImageView *centerImageView; //中间视图
+@property (strong, nonatomic) UIImageView *rightImageView; //右边视图
+@property (weak, nonatomic) UIScrollView *scrollView; //滚动视图UIScrollView
+@property (assign, nonatomic) NSUInteger imagesCount;  //图片数量
+@property (assign, nonatomic) NSUInteger currentImageIndex;  //当前图片索引
+@property (weak, nonatomic) UIPageControl *pageControl;  //分页控件
+@property (assign, nonatomic)LFXScrollViewDataEnum dateEnum; //数据类型（是图片还是名字）
+@property (strong, nonatomic)     NSTimer * scrollTimer;  //滑动定时器
+@property (weak, nonatomic) UILabel *titleL; //标题Label
+
+@end
+
+
+
 @implementation LFXScrollView
 
 - (instancetype)init {
@@ -77,6 +70,25 @@ static CGFloat TitleM = 10;
         [self addSubViews];
     }
     
+    return self;
+}
+
+/**
+ *  初始化方法
+ */
+- (instancetype)initWithFrame:(CGRect)frame imagesNameArray:(NSArray *)imageNameA titleNameArray:(NSArray *)titleNameA {
+    self = [super initWithFrame:frame];
+    if (self) {
+        /**  添加子控件*/
+        [self addSubViews];
+        if (imageNameA) {
+            self.imagesNameA = imageNameA;
+        }
+        
+        if (titleNameA) {
+            self.titleNameA = titleNameA;
+        }
+    }
     return self;
 }
 
@@ -144,7 +156,6 @@ static CGFloat TitleM = 10;
     pageControl.currentPageIndicatorTintColor = self.currentTintColor ? self.currentTintColor : [UIColor blueColor];
     [bgView addSubview:pageControl];
     self.pageControl = pageControl;
-    
     
     
     //创建标题Label
@@ -234,9 +245,9 @@ static CGFloat TitleM = 10;
         self.centerImageView.image = [self.imagesA firstObject];
         self.rightImageView.image = self.imagesA[1];
     } else {
-        self.leftImageView.image = [UIImage imageNamed:[self.imagesA lastObject]];
-        self.centerImageView.image = [UIImage imageNamed:[self.imagesA firstObject]];
-        self.rightImageView.image =[UIImage imageNamed:self.imagesA[1]] ;
+        self.leftImageView.image = [UIImage imageNamed:[self.imagesNameA lastObject]];
+        self.centerImageView.image = [UIImage imageNamed:[self.imagesNameA firstObject]];
+        self.rightImageView.image =[UIImage imageNamed:self.imagesNameA[1]] ;
     }
     self.currentImageIndex = self.selectCurrentPage = 0;
 }
@@ -337,7 +348,8 @@ static CGFloat TitleM = 10;
  */
 - (void)addTimer {
     NSTimer *timer = [NSTimer timerWithTimeInterval: self.timeInterval target:self selector:@selector(timerAction:) userInfo:nil repeats:YES];
-#warning 当视图滑动时，定时器不执行方法，可以切换定时器模式为（NSRunLoopCommonModes）解决，即：（[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes]）
+#warning 当视图滑动时，定时器不执行方法，可以切换定时器模式为（NSRunLoopCommonModes）解决，即：
+//    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes]
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     self.scrollTimer = timer;
 }
@@ -381,9 +393,9 @@ static CGFloat TitleM = 10;
         self.centerImageView.image = self.imagesA[_currentImageIndex];
         self.rightImageView.image = self.imagesA[rightImageIndex];
     } else {
-        self.leftImageView.image = [UIImage imageNamed:self.imagesA[leftImageIndex]];
-        self.centerImageView.image = [UIImage imageNamed:self.imagesA[_currentImageIndex]];
-        self.rightImageView.image =[UIImage imageNamed:self.imagesA[rightImageIndex]] ;
+        self.leftImageView.image = [UIImage imageNamed:self.imagesNameA[leftImageIndex]];
+        self.centerImageView.image = [UIImage imageNamed:self.imagesNameA[_currentImageIndex]];
+        self.rightImageView.image =[UIImage imageNamed:self.imagesNameA[rightImageIndex]] ;
     }
 
 }
